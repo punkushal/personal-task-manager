@@ -1,13 +1,13 @@
-class User {
+class UserModel {
   final String uid;
   final String email;
   final String name;
 
-  User({required this.email, required this.uid, required this.name});
+  UserModel({required this.email, required this.uid, required this.name});
 
   //To convert from json to User object
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       email: json['email'],
       uid: json['uid'],
       name: json['displayName'],
