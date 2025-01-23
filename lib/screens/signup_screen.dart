@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
+import 'package:personal_task_manager/screens/login_screen.dart';
 import 'package:personal_task_manager/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final service = AuthService();
+  bool isLoading = false;
   @override
   void dispose() {
     nameController.dispose();
@@ -30,9 +32,15 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void onSigningUp() async {
     if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
       ScaffoldMessenger.of(context).clearSnackBars();
       await service.createUserWithEmailAndPassword(emailController.text,
           passwordController.text, nameController.text, context);
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
     showMsg(context, 'Failed to register', Colors.red);
@@ -128,7 +136,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   builder: (context, provider, child) {
                     return AppTextFormField(
                       controller: passwordController,
-                      obscureText: provider.isToggle ? true : false,
+                      obscureText: provider.isVisible ? false : true,
                       validator: (value) {
                         if (value!.length > 16 && value.length < 8) {
                           return 'Password characters length should be within 8 to 16';
@@ -144,7 +152,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           provider.toggleVissibility();
                         },
                         child: Icon(
-                          provider.isToggle
+                          provider.isVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
                         ),
@@ -167,30 +175,36 @@ class _SignupScreenState extends State<SignupScreen> {
                           40,
                         ),
                       ),
-                      child: AppText(
-                        text: 'Sign Up',
-                        color: Colors.white,
-                      ),
+                      child: isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                backgroundColor: Colors.white,
+                              ),
+                            )
+                          : AppText(
+                              text: 'Sign Up',
+                              color: Colors.white,
+                            ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       spacing: 6,
                       children: [
                         AppText(text: 'Already have an account?'),
-                        // InkWell(
-                        //   onTap: () {
-                        //     Navigator.pushReplacement(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //         builder: (ctx) => LoginScreen(),
-                        //       ),
-                        //     );
-                        //   },
-                        //   child: AppText(
-                        //     text: 'Log in',
-                        //     color: Colors.blue,
-                        //   ),
-                        // ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (ctx) => LoginScreen(),
+                              ),
+                            );
+                          },
+                          child: AppText(
+                            text: 'Log in',
+                            color: Colors.blue,
+                          ),
+                        ),
                       ],
                     ),
                   ],
