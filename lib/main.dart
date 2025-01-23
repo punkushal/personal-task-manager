@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:personal_task_manager/firebase_options.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
 import 'package:personal_task_manager/screens/signup_screen.dart';
@@ -22,11 +23,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Personal Task Manager',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       home: SignupScreen(),
+    );
+  }
+}
+
+class AppTheme {
+  // Define a reusable light theme
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      primaryColor: Colors.blue, // Main app color
+      scaffoldBackgroundColor: Colors.white, // White background
+      textTheme: GoogleFonts.dmSansTextTheme(), // Use DM Sans font
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.blue, // Blue app bar
+        foregroundColor: Colors.white, // White text/icon on app bar
+        elevation: 0,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue, // Blue button color
+          foregroundColor: Colors.white, // White text on buttons
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12), // Rounded buttons
+          ),
+        ),
+      ),
     );
   }
 }
