@@ -1,10 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:personal_task_manager/firebase_options.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
-import 'package:personal_task_manager/screens/signup_screen.dart';
+import 'package:personal_task_manager/screens/home_screen.dart';
 import 'package:provider/provider.dart';
+
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +27,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Personal Task Manager',
       theme: AppTheme.lightTheme,
-      home: SignupScreen(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return HomeScreen();
+          }
+          return LoginScreen();
+        },
+      ),
     );
   }
 }
