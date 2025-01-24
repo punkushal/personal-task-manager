@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 class TaskProvider with ChangeNotifier {
-  bool isToggle = false;
+  bool isVisible = false;
 
   void toggleVissibility() {
-    isToggle = !isToggle;
+    isVisible = !isVisible;
     notifyListeners();
   }
 }
