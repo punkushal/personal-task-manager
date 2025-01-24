@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:personal_task_manager/models/task_model.dart';
 import 'package:intl/intl.dart';
+import 'package:personal_task_manager/services/task_service.dart';
+import 'package:personal_task_manager/utils/helper_function.dart';
 
 class AddTaskScreen extends StatefulWidget {
   final String userId;
@@ -13,6 +15,8 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final formkey = GlobalKey<FormState>();
+  final _taskService = TaskService();
+  bool isLoading = false;
 
   String _title = "";
   String _description = "";
@@ -47,11 +51,50 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   //To submit task
-  void _submitTask() {
+  void _submitTask() async {
     if (formkey.currentState!.validate()) {
       formkey.currentState!.save();
-      return;
+
+      TaskModel task = TaskModel(
+        id: widget.existingTask?.id,
+        title: _title,
+        description: _description,
+        dueDate: _dueDate ?? DateTime.now(),
+        priority: _priority,
+        userId: widget.userId,
+        categoryId: _categoryId,
+      );
+      try {
+        if (widget.existingTask == null) {
+          setState(() {
+            isLoading = true;
+          });
+          await _taskService.addTask(task);
+          setState(() {
+            isLoading = false;
+          });
+          if (mounted) {
+            showMsg(context, 'Successfully added new task', Colors.green);
+          }
+        } else {
+          setState(() {
+            isLoading = true;
+          });
+          await _taskService.updateTask(task);
+          setState(() {
+            isLoading = false;
+          });
+        }
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        if (mounted) {
+          showMsg(context, 'Failed to save task', Colors.red);
+        }
+      }
     }
+    return;
   }
 
   @override
@@ -104,7 +147,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   return null;
                 },
                 onSaved: (newValue) {
-                  _title = newValue!;
+                  _description = newValue!;
                 },
               ),
 
@@ -152,7 +195,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _submitTask,
-                child: Text('Save Task'),
+                child: isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                      )
+                    : Text('Save Task'),
               ),
             ],
           ),
