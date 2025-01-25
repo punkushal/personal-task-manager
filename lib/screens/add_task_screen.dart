@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:personal_task_manager/models/task_model.dart';
 import 'package:intl/intl.dart';
+import 'package:personal_task_manager/providers/task_provider.dart';
 import 'package:personal_task_manager/services/task_service.dart';
 import 'package:personal_task_manager/utils/helper_function.dart';
+import 'package:provider/provider.dart';
 
 class AddTaskScreen extends StatefulWidget {
   final String userId;
@@ -22,7 +24,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String _description = "";
   DateTime? _dueDate;
   Priority _priority = Priority.low;
-  String? _categoryId;
+  String _categoryId = 'Travel';
 
   @override
   void initState() {
@@ -32,7 +34,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       _description = widget.existingTask!.description!;
       _dueDate = widget.existingTask!.dueDate;
       _priority = widget.existingTask!.priority;
-      _categoryId = widget.existingTask!.categoryId;
+      _categoryId = widget.existingTask!.categoryId!;
     }
   }
 
@@ -99,6 +101,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: widget.existingTask != null
@@ -192,16 +195,38 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                 ],
               ),
+
+              const SizedBox(height: 16),
               SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _submitTask,
-                child: isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        ),
-                      )
-                    : Text('Save Task'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  DropdownButton<String>(
+                    value: _categoryId,
+                    hint: Text('Category'),
+                    items: taskProvider.categories
+                        .map((category) => DropdownMenuItem(
+                              value: category.name,
+                              child: Text(category.name),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _categoryId = value!;
+                      });
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: _submitTask,
+                    child: isLoading
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              backgroundColor: Colors.white,
+                            ),
+                          )
+                        : Text('Save Task'),
+                  ),
+                ],
               ),
             ],
           ),
