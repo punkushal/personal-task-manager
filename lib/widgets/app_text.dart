@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:personal_task_manager/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class AppText extends StatelessWidget {
   final String text;
@@ -18,14 +20,18 @@ class AppText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      textAlign: textAlign,
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        color: color,
-      ),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Text(
+          text,
+          textAlign: textAlign,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            color: themeProvider.isDarkMode ? Colors.white : color,
+          ),
+        );
+      },
     );
   }
 }
