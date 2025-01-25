@@ -52,6 +52,7 @@ class TaskService {
     String userId, {
     Priority? priority,
     DateTime? startDate,
+    String? category,
   }) {
     Query query =
         _firestore.collection('tasks').where('userId', isEqualTo: userId);
@@ -62,6 +63,10 @@ class TaskService {
 
     if (startDate != null) {
       query = query.where('dueDate', isEqualTo: startDate);
+    }
+
+    if (category != null) {
+      query = query.where('categoryId', isEqualTo: category);
     }
 
     return query.snapshots().map((snapshot) =>
