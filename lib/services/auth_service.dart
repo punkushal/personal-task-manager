@@ -6,13 +6,13 @@ import 'package:personal_task_manager/models/user.dart';
 import '../utils/helper_function.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final db = FirebaseFirestore.instance;
 
   Future<void> createUserWithEmailAndPassword(
       String email, String password, String name, BuildContext context) async {
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      final userCredential = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
       final uid = userCredential.user!.uid;
 
@@ -50,7 +50,7 @@ class AuthService {
   Future<void> loginUser(
       String email, String password, BuildContext context) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await auth.signInWithEmailAndPassword(email: email, password: password);
       // if (context.mounted) {
       //   Navigator.pushReplacement(
       //       context,
