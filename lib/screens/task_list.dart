@@ -36,19 +36,37 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 spacing: 10,
                 children: [
                   // Priority Filter
-                  DropdownButton<Priority>(
-                    hint: Text('Select Priority'),
-                    value: taskProvider.selectedPriority,
-                    onChanged: (Priority? newValue) {
-                      taskProvider.setPriority(newValue);
-                    },
-                    items: Priority.values
-                        .map<DropdownMenuItem<Priority>>((Priority priority) {
-                      return DropdownMenuItem<Priority>(
-                        value: priority,
-                        child: Text(priority.toString().split('.').last),
-                      );
-                    }).toList(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DropdownButton<Priority>(
+                        hint: Text('Select Priority'),
+                        value: taskProvider.selectedPriority,
+                        onChanged: (Priority? newValue) {
+                          taskProvider.setPriority(newValue);
+                        },
+                        items: Priority.values.map<DropdownMenuItem<Priority>>(
+                            (Priority priority) {
+                          return DropdownMenuItem<Priority>(
+                            value: priority,
+                            child: Text(priority.toString().split('.').last),
+                          );
+                        }).toList(),
+                      ),
+                      DropdownButton<String>(
+                        value: taskProvider.selectedCategory,
+                        hint: Text('Category'),
+                        items: taskProvider.categories
+                            .map((category) => DropdownMenuItem(
+                                  value: category.name,
+                                  child: Text(category.name),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          taskProvider.setCategory(value);
+                        },
+                      ),
+                    ],
                   ),
 
                   // Date Range Picker
