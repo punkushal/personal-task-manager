@@ -14,12 +14,16 @@ class TaskProvider with ChangeNotifier {
 
   Priority? _selectedPriority;
   Priority? _appliedPriority;
+  String? _selectedCategory;
+  String? _appliedCategory;
   DateTime? _startDate;
   DateTime? _endDate;
   bool _isFiltering = false;
 
   Priority? get selectedPriority => _selectedPriority;
   Priority? get appliedPriority => _appliedPriority;
+  String? get selectedCategory => _selectedCategory;
+  String? get appliedCategory => _appliedCategory;
   DateTime? get startDate => _startDate;
   DateTime? get endDate => _endDate;
   bool get isFiltering => _isFiltering;
@@ -41,6 +45,11 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setCategory(String? category) {
+    _selectedCategory = category;
+    notifyListeners();
+  }
+
   void setStartDate(DateTime? date) {
     _startDate = date;
     notifyListeners();
@@ -53,6 +62,7 @@ class TaskProvider with ChangeNotifier {
 
   void applyFilters() {
     _appliedPriority = _selectedPriority;
+    _appliedCategory = _selectedCategory;
     _isFiltering = true;
     notifyListeners();
   }
@@ -61,6 +71,7 @@ class TaskProvider with ChangeNotifier {
     _selectedPriority = null;
     _startDate = null;
     _endDate = null;
+    _selectedCategory = null;
     _isFiltering = false;
     notifyListeners();
   }
@@ -70,6 +81,7 @@ class TaskProvider with ChangeNotifier {
       userId,
       priority: _isFiltering ? _appliedPriority : null,
       startDate: _isFiltering ? _startDate : null,
+      category: _isFiltering ? _appliedCategory : null,
     );
   }
 
