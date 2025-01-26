@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:personal_task_manager/firebase_options.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
+import 'package:personal_task_manager/providers/theme_provider.dart';
 import 'package:personal_task_manager/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -14,8 +15,16 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(ChangeNotifierProvider(
-      create: (context) => TaskProvider(), child: const MyApp()));
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(
+        create: (context) => TaskProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => ThemeProvider(),
+      )
+    ], child: const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -24,18 +33,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Personal Task Manager',
-      theme: AppTheme.lightTheme,
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return HomeScreen();
-          }
-          return LoginScreen();
-        },
-      ),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Personal Task Manager',
+          theme:
+              themeProvider.isDarkMode ? ThemeData.dark() : AppTheme.lightTheme,
+          home: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return HomeScreen();
+              }
+              return LoginScreen();
+            },
+          ),
+        );
+      },
     );
   }
 }
