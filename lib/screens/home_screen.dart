@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:personal_task_manager/screens/add_task_screen.dart';
+import 'package:personal_task_manager/screens/profile_screen.dart';
+import 'package:personal_task_manager/screens/search_screen.dart';
 import 'package:personal_task_manager/services/auth_service.dart';
-import 'package:personal_task_manager/widgets/task_list.dart';
+import 'package:personal_task_manager/screens/task_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,9 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   List<Widget> screens = [
     TaskListScreen(),
-    Center(
-      child: Text('profile screen'),
-    ),
+    SearchScreen(),
+    ProfileScreen(),
   ];
   void onTapped(int index) {
     setState(() {
@@ -47,6 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.task),
             label: 'Tasks',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
