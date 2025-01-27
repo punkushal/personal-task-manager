@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:personal_task_manager/models/category_model.dart';
-
+import 'package:personal_task_manager/services/auth_service.dart';
 import '../models/task_model.dart';
 import '../services/task_service.dart';
 
@@ -10,7 +10,9 @@ class TaskProvider with ChangeNotifier {
 
   final TaskService _taskService = TaskService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  List<CategoryModel> _categories = [];
+  final List<CategoryModel> _categories = [];
+  List<TaskModel> _tasksList = [];
+  List<TaskModel> get tasksList => _tasksList;
 
   Priority? _selectedPriority;
   Priority? _appliedPriority;
@@ -76,6 +78,18 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //get tasks from user search query
+  void searchTask(String query) async {
+    if (query.isEmpty) {
+      _tasksList = [];
+      notifyListeners();
+      return;
+    }
+    _tasksList =
+        await _taskService.getTasks(AuthService().auth.currentUser!.uid, query);
+    notifyListeners();
+  }
+
   Stream<List<TaskModel>> getFilteredTasks(String userId) {
     return _taskService.getFilteredTasks(
       userId,
@@ -102,24 +116,6 @@ class TaskProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error adding category: $e');
-    }
-  }
-
-  Future<void> fetchCategories(String userId) async {
-    try {
-      final categoriesSnapshot = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('categories')
-          .get();
-
-      _categories = categoriesSnapshot.docs
-          .map((doc) => CategoryModel.fromMap(doc.data(), doc.id))
-          .toList();
-
-      notifyListeners();
-    } catch (e) {
-      print('Error fetching categories: $e');
     }
   }
 
