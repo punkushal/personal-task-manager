@@ -20,6 +20,9 @@ class ProfileScreen extends StatelessWidget {
               return Switch(
                 value: themeProvider.isDarkMode,
                 onChanged: (_) => themeProvider.toggleTheme(),
+                activeColor: themeProvider.isDarkMode
+                    ? const Color.fromARGB(137, 118, 112, 112)
+                    : null,
               );
             },
           ),
