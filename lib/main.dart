@@ -6,23 +6,27 @@ import 'package:personal_task_manager/firebase_options.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
 import 'package:personal_task_manager/providers/theme_provider.dart';
 import 'package:personal_task_manager/screens/home_screen.dart';
+import 'package:personal_task_manager/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Initialize notifications
+  final notificationService = NotificationService();
+  await notificationService.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
     MultiProvider(providers: [
       ChangeNotifierProvider(
-        create: (context) => TaskProvider(),
+        create: (context) => ThemeProvider(),
       ),
       ChangeNotifierProvider(
-        create: (context) => ThemeProvider(),
-      )
+        create: (context) => TaskProvider(),
+      ),
     ], child: const MyApp()),
   );
 }
