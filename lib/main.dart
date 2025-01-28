@@ -20,21 +20,23 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
-    MultiProvider(providers: [
-      ChangeNotifierProvider(
-        create: (context) => ThemeProvider(),
-      ),
-      ChangeNotifierProvider(
-        create: (context) => TaskProvider(),
-      ),
-    ], child: const MyApp()),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TaskProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
   );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
@@ -42,8 +44,9 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Personal Task Manager',
-          theme:
-              themeProvider.isDarkMode ? ThemeData.dark() : AppTheme.lightTheme,
+          theme: themeProvider.isDarkMode
+              ? AppTheme.darkTheme
+              : AppTheme.lightTheme,
           home: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
@@ -60,30 +63,108 @@ class MyApp extends StatelessWidget {
 }
 
 class AppTheme {
-  // Define a reusable light theme
+  // Light Theme
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      primaryColor: Colors.blue, // Main app color
-      scaffoldBackgroundColor: Colors.white, // White background
-      textTheme: GoogleFonts.dmSansTextTheme(), // Use DM Sans font
+      primaryColor: Colors.blue,
+      scaffoldBackgroundColor: Colors.white,
+      textTheme: GoogleFonts.dmSansTextTheme().apply(bodyColor: Colors.black),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.blue, // Blue app bar
-        foregroundColor: Colors.white, // White text/icon on app bar
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue, // Blue button color
-          foregroundColor: Colors.white, // White text on buttons
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12), // Rounded buttons
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.grey[200],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.blue),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+      ),
+      cardTheme: CardTheme(
+        color: Colors.white,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      dividerColor: Colors.grey[300],
+    );
+  }
+
+  // Dark Theme
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      primaryColor: Colors.blue,
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      textTheme: GoogleFonts.dmSansTextTheme().apply(bodyColor: Colors.white),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF1E1E1E),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white24,
+          foregroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF1E1E1E),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.blue),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+      ),
+      cardTheme: CardTheme(
+        color: const Color.fromARGB(199, 65, 63, 63),
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      dividerColor: const Color(0xFF444444),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: const Color.fromARGB(227, 90, 80, 80),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white30,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: const Color.fromARGB(228, 65, 63, 63),
       ),
     );
   }
