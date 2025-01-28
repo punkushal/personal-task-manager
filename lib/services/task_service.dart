@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:personal_task_manager/services/auth_service.dart';
+import 'package:personal_task_manager/services/notification_service.dart';
 import '../models/task_model.dart';
 
 class TaskService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  final NotificationService _notificationService = NotificationService();
   // Create Task
   Future<void> addTask(TaskModel task) async {
     try {
       await _firestore.collection('tasks').add(task.toFirestore());
+      _notificationService.scheduleTaskNotification(task);
     } catch (e) {
       print('Error adding task: $e');
       rethrow;
@@ -15,13 +18,23 @@ class TaskService {
   }
 
   // Read Tasks
-  Stream<List<TaskModel>> getTasks(String userId) {
-    return _firestore
+  Future<List<TaskModel>> getTasks(String userId, String queryTitle) async {
+    QuerySnapshot snapshot = await _firestore
         .collection('tasks')
         .where('userId', isEqualTo: userId)
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => TaskModel.fromFirestore(doc)).toList());
+        .get();
+
+    List<TaskModel> tasks =
+        snapshot.docs.map((doc) => TaskModel.fromFirestore(doc)).toList();
+    // Client-side title filtering
+    if (queryTitle.isEmpty) {
+      return [];
+    }
+    tasks = tasks
+        .where((task) =>
+            task.title.toLowerCase().contains(queryTitle.toLowerCase()))
+        .toList();
+    return tasks;
   }
 
   // Update Task
@@ -40,7 +53,16 @@ class TaskService {
   // Delete Task
   Future<void> deleteTask(String taskId) async {
     try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('tasks')
+          .where('userId', isEqualTo: AuthService().auth.currentUser!.uid)
+          .get();
+
+      List<TaskModel> tasks =
+          snapshot.docs.map((doc) => TaskModel.fromFirestore(doc)).toList();
       await _firestore.collection('tasks').doc(taskId).delete();
+      final task = tasks.singleWhere((task) => task.id == taskId);
+      _notificationService.cancelTaskNotification(task);
     } catch (e) {
       print('Error deleting task: $e');
       rethrow;
@@ -53,6 +75,7 @@ class TaskService {
     Priority? priority,
     DateTime? startDate,
     String? category,
+    String? queryTitle,
   }) {
     Query query =
         _firestore.collection('tasks').where('userId', isEqualTo: userId);
@@ -69,7 +92,19 @@ class TaskService {
       query = query.where('categoryId', isEqualTo: category);
     }
 
-    return query.snapshots().map((snapshot) =>
-        snapshot.docs.map((doc) => TaskModel.fromFirestore(doc)).toList());
+    return query.snapshots().map((snapshot) {
+      List<TaskModel> tasks =
+          snapshot.docs.map((doc) => TaskModel.fromFirestore(doc)).toList();
+
+      // Client-side title filtering
+      if (queryTitle != null && queryTitle.isNotEmpty) {
+        tasks = tasks
+            .where((task) =>
+                task.title.toLowerCase().contains(queryTitle.toLowerCase()))
+            .toList();
+      }
+
+      return tasks;
+    });
   }
 }
