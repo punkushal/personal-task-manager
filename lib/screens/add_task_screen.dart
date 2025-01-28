@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
 import 'package:personal_task_manager/services/task_service.dart';
 import 'package:personal_task_manager/utils/helper_function.dart';
+import 'package:personal_task_manager/widgets/app_text.dart';
 import 'package:provider/provider.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String _title = "";
   String _description = "";
   DateTime? _dueDate;
+  TimeOfDay? _selectedTime;
   Priority _priority = Priority.low;
   String _categoryId = 'Travel';
 
@@ -52,16 +54,42 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     }
   }
 
+  Future<void> _selectTime() async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (pickedTime != null) {
+      setState(() {
+        _selectedTime = pickedTime;
+      });
+    }
+  }
+
   //To submit task
   void _submitTask() async {
+    if (_selectedTime == null) {
+      if (mounted) {
+        showMsg(context, 'Please select the time', Colors.red);
+      }
+    }
     if (formkey.currentState!.validate()) {
       formkey.currentState!.save();
+
+      // Combine date and time into a DateTime object
+      final DateTime scheduledDateTime = DateTime(
+        _dueDate!.year,
+        _dueDate!.month,
+        _dueDate!.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      );
 
       TaskModel task = TaskModel(
         id: widget.existingTask?.id,
         title: _title,
         description: _description,
-        dueDate: _dueDate ?? DateTime.now(),
+        dueDate: scheduledDateTime,
         priority: _priority,
         userId: widget.userId,
         categoryId: _categoryId,
@@ -216,17 +244,39 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       });
                     },
                   ),
+
+                  //To pick time
                   ElevatedButton(
-                    onPressed: _submitTask,
-                    child: isLoading
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              backgroundColor: Colors.white,
-                            ),
-                          )
-                        : Text('Save Task'),
+                    onPressed: () {
+                      _selectTime();
+                    },
+                    child: AppText(
+                      text: _selectedTime != null
+                          ? _selectedTime!.format(context)
+                          : "Select Time",
+                      color: Colors.white,
+                    ),
                   ),
                 ],
+              ),
+              SizedBox(
+                height: 18,
+              ),
+              ElevatedButton(
+                onPressed: _submitTask,
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(150, 35),
+                ),
+                child: isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                      )
+                    : AppText(
+                        text: 'Save Task',
+                        color: Colors.white,
+                      ),
               ),
             ],
           ),
