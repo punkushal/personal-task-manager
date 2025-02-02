@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:personal_task_manager/providers/theme_provider.dart';
 import 'package:personal_task_manager/widgets/app_text.dart';
 import 'package:personal_task_manager/widgets/task_detail.dart';
+import 'package:provider/provider.dart';
 
 import '../models/task_model.dart';
 import '../screens/add_task_screen.dart';
@@ -47,6 +49,7 @@ class TaskListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
     return Card(
       child: ListTile(
         leading: CircleAvatar(
@@ -61,6 +64,7 @@ class TaskListTile extends StatelessWidget {
           '${task.dueDate.toLocal().toString().split(' ')[0]} - ${task.description ?? ''}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: theme.isDarkMode ? Colors.white38 : null),
         ),
         trailing: PopupMenuButton(
           itemBuilder: (ctx) => [
@@ -89,7 +93,7 @@ class TaskListTile extends StatelessWidget {
                   context: context,
                   builder: (ctx) {
                     return AlertDialog(
-                      title: Text('Delete Task'),
+                      title: AppText(text: 'Delete Task'),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -107,7 +111,7 @@ class TaskListTile extends StatelessWidget {
                               Colors.blue,
                             );
                           },
-                          child: Center(child: Text('Yes')),
+                          child: Center(child: AppText(text: 'Yes')),
                         ),
                       ],
                     );
