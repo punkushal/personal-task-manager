@@ -20,9 +20,7 @@ class ProfileScreen extends StatelessWidget {
               return Switch(
                 value: themeProvider.isDarkMode,
                 onChanged: (_) => themeProvider.toggleTheme(),
-                activeColor: themeProvider.isDarkMode
-                    ? const Color.fromARGB(137, 118, 112, 112)
-                    : null,
+                activeColor: themeProvider.isDarkMode ? Colors.white24 : null,
               );
             },
           ),
@@ -33,6 +31,7 @@ class ProfileScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(86.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               spacing: 10,
               children: [
@@ -44,7 +43,10 @@ class ProfileScreen extends StatelessWidget {
                   onPressed: () async {
                     await authService.auth.signOut();
                   },
-                  child: Text('Log out'),
+                  child: AppText(
+                    text: 'Log out',
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
