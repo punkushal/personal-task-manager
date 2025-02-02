@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:personal_task_manager/providers/connectivity_provider.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
 import 'package:personal_task_manager/screens/signup_screen.dart';
 import 'package:personal_task_manager/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import '../utils/helper_function.dart';
 import '../widgets/app_text.dart';
 import '../widgets/app_text_formfield.dart';
 
@@ -30,7 +30,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onLogin() async {
-    if (formKey.currentState!.validate()) {
+    final connectivity =
+        Provider.of<ConnectivityProvider>(context, listen: false);
+    if (formKey.currentState!.validate() && connectivity.isOnline) {
       setState(() {
         isLoading = true;
       });
@@ -42,7 +44,25 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       return;
     }
-    showMsg(context, 'Failed to login', Colors.red);
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            content: AppText(text: 'Please check your internet connection!'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Center(
+                    child: AppText(
+                  text: 'Okay',
+                  color: Colors.white,
+                )),
+              ),
+            ],
+          );
+        });
   }
 
   @override
