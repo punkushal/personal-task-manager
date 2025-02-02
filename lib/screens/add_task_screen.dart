@@ -54,8 +54,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     }
   }
 
-  Future<void> _selectTime() async {
-    TimeOfDay? pickedTime = await showTimePicker(
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
@@ -68,10 +68,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   //To submit task
   void _submitTask() async {
+    if (_dueDate == null) {
+      if (mounted) {
+        showMsg(context, 'Please select a due date', Colors.red);
+      }
+      return;
+    }
     if (_selectedTime == null) {
       if (mounted) {
         showMsg(context, 'Please select the time', Colors.red);
       }
+      return;
     }
     if (formkey.currentState!.validate()) {
       formkey.currentState!.save();
@@ -104,7 +111,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             isLoading = false;
           });
           if (mounted) {
-            showMsg(context, 'Successfully added new task', Colors.green);
+            showMsg(context, 'Successfully added new task', Colors.blue);
           }
         } else {
           setState(() {
@@ -247,9 +254,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
                   //To pick time
                   ElevatedButton(
-                    onPressed: () {
-                      _selectTime();
-                    },
+                    onPressed: () => _selectTime(context),
                     child: AppText(
                       text: _selectedTime != null
                           ? _selectedTime!.format(context)
