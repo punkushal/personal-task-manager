@@ -4,6 +4,7 @@ import 'package:personal_task_manager/screens/login_screen.dart';
 import 'package:personal_task_manager/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/connectivity_provider.dart';
 import '../utils/helper_function.dart';
 import '../widgets/app_text.dart';
 import '../widgets/app_text_formfield.dart';
@@ -31,7 +32,9 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void onSigningUp() async {
-    if (formKey.currentState!.validate()) {
+    final connectivity =
+        Provider.of<ConnectivityProvider>(context, listen: false);
+    if (formKey.currentState!.validate() && connectivity.isOnline) {
       setState(() {
         isLoading = true;
       });
@@ -43,7 +46,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
       return;
     }
-    showMsg(context, 'Failed to register', Colors.red);
+    showInternetConnectionErroMsg(context);
   }
 
   @override
