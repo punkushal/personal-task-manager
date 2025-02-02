@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:personal_task_manager/firebase_options.dart';
+import 'package:personal_task_manager/providers/connectivity_provider.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
 import 'package:personal_task_manager/providers/theme_provider.dart';
 import 'package:personal_task_manager/screens/home_screen.dart';
@@ -28,6 +29,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => TaskProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ConnectivityProvider(),
         ),
       ],
       child: const MyApp(),
@@ -173,6 +177,7 @@ class AppTheme {
       popupMenuTheme: PopupMenuThemeData(
         iconColor: Colors.white,
       ),
+      colorScheme: ColorScheme.dark(),
     );
   }
 }
