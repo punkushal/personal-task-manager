@@ -9,8 +9,21 @@ class TaskService {
   // Create Task
   Future<void> addTask(TaskModel task) async {
     try {
-      await _firestore.collection('tasks').add(task.toFirestore());
-      _notificationService.scheduleTaskNotification(task);
+      DocumentReference docRef =
+          await _firestore.collection('tasks').add(task.toFirestore());
+
+      final updatedTask = TaskModel(
+        id: docRef.id, // Assign Firestore-generated ID
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        priority: task.priority,
+        status: task.status,
+        categoryId: task.categoryId,
+        userId: task.userId,
+      );
+
+      _notificationService.scheduleTaskNotification(updatedTask);
     } catch (e) {
       print('Error adding task: $e');
       rethrow;
@@ -44,6 +57,7 @@ class TaskService {
           .collection('tasks')
           .doc(task.id)
           .update(task.toFirestore());
+      _notificationService.scheduleTaskNotification(task);
     } catch (e) {
       print('Error updating task: $e');
       rethrow;
