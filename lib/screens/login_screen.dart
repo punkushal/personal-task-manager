@@ -3,6 +3,7 @@ import 'package:personal_task_manager/providers/connectivity_provider.dart';
 import 'package:personal_task_manager/providers/task_provider.dart';
 import 'package:personal_task_manager/screens/signup_screen.dart';
 import 'package:personal_task_manager/services/auth_service.dart';
+import 'package:personal_task_manager/utils/helper_function.dart';
 import 'package:provider/provider.dart';
 import '../widgets/app_text.dart';
 import '../widgets/app_text_formfield.dart';
@@ -44,25 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       return;
     }
-    showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            content: AppText(text: 'Please check your internet connection!'),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Center(
-                    child: AppText(
-                  text: 'Okay',
-                  color: Colors.white,
-                )),
-              ),
-            ],
-          );
-        });
+    showInternetConnectionErroMsg(context);
   }
 
   @override
