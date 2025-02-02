@@ -16,3 +16,23 @@ showMsg(BuildContext context, String msg, Color bgColor) {
     ),
   );
 }
+
+showInternetConnectionErroMsg(BuildContext context) => showDialog(
+    context: context,
+    builder: (ctx) {
+      return AlertDialog(
+        content: AppText(text: 'Please check your internet connection!'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Center(
+                child: AppText(
+              text: 'Okay',
+              color: Colors.white,
+            )),
+          ),
+        ],
+      );
+    });
