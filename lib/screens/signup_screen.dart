@@ -32,27 +32,28 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void onSigningUp() async {
-    final connectivity =
-        Provider.of<ConnectivityProvider>(context, listen: false);
-    if (formKey.currentState!.validate() && connectivity.isOnline) {
+    if (formKey.currentState!.validate()) {
       setState(() {
         isLoading = true;
       });
       ScaffoldMessenger.of(context).clearSnackBars();
       await service.createUserWithEmailAndPassword(emailController.text,
           passwordController.text, nameController.text, context);
+      if (mounted) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => LoginScreen()));
+      }
       setState(() {
         isLoading = false;
       });
       return;
     }
-    showInternetConnectionErroMsg(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
-
+    final internetProvider = Provider.of<ConnectivityProvider>(context);
     return Scaffold(
       body: Form(
         key: formKey,
@@ -171,7 +172,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   spacing: 8,
                   children: [
                     ElevatedButton(
-                      onPressed: onSigningUp,
+                      onPressed: () {
+                        if (internetProvider.isOnline) {
+                          onSigningUp();
+                          return;
+                        }
+                        showInternetConnectionErroMsg(context);
+                      },
                       style: ElevatedButton.styleFrom(
                         fixedSize: Size(
                           deviceWidth * 0.9,
