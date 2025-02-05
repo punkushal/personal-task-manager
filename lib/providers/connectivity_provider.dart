@@ -1,26 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class ConnectivityProvider with ChangeNotifier {
-  final Connectivity _connectivity = Connectivity();
-  bool _isOnline = false;
+  bool _isOnline = true;
+  late StreamSubscription<InternetStatus> _streamSubscription;
 
   bool get isOnline => _isOnline;
 
   ConnectivityProvider() {
-    checkConnectivity();
-    _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _streamSubscription = InternetConnection().onStatusChange.listen((status) {
+      _isOnline = status == InternetStatus.connected;
+      notifyListeners();
+    });
   }
 
-  Future<void> checkConnectivity() async {
-    final result = await _connectivity.checkConnectivity();
-    _updateConnectionStatus(result);
-  }
-
-  void _updateConnectionStatus(List<ConnectivityResult> result) {
-    _isOnline = result.contains(ConnectivityResult.wifi) ? true : false;
-    notifyListeners();
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
   }
 }
