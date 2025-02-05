@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:personal_task_manager/providers/connectivity_provider.dart';
 import 'package:personal_task_manager/services/auth_service.dart';
+import 'package:personal_task_manager/utils/helper_function.dart';
 import 'package:personal_task_manager/widgets/app_text.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +13,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final internetProvider = Provider.of<ConnectivityProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
@@ -41,7 +44,11 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    await authService.auth.signOut();
+                    if (internetProvider.isOnline) {
+                      await authService.auth.signOut();
+                      return;
+                    }
+                    showInternetConnectionErroMsg(context);
                   },
                   child: AppText(
                     text: 'Log out',
