@@ -8,6 +8,9 @@ class NotificationService {
   final notification.FlutterLocalNotificationsPlugin _notifications =
       notification.FlutterLocalNotificationsPlugin();
 
+  static Future<void> onDidReceiveNotification(
+      notification.NotificationResponse notificationResponse) async {}
+
   Future<void> initialize() async {
     tz.initializeTimeZones();
 
@@ -22,57 +25,74 @@ class NotificationService {
       requestBadgePermission: true,
       requestAlertPermission: true,
     );
-
+    //Combine Android and Ios initialization settings
     const notification.InitializationSettings initSettings =
         notification.InitializationSettings(
       android: androidSettings,
       iOS: iOSSettings,
     );
 
-    await _notifications.initialize(
-      initSettings,
-      onDidReceiveNotificationResponse:
-          (notification.NotificationResponse response) {
-        // Handle notification tap
-        print('Notification tapped: ${response.payload}');
-      },
-    );
+    try {
+      // Request permissions first
+      await _notifications
+          .resolvePlatformSpecificImplementation<
+              notification.AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
+      await _notifications.initialize(
+        initSettings,
+        onDidReceiveNotificationResponse: onDidReceiveNotification,
+        onDidReceiveBackgroundNotificationResponse: onDidReceiveNotification,
+      );
+    } catch (e) {
+      print('Error initializing notifications: $e');
+    }
   }
 
   Future<void> scheduleTaskNotification(TaskModel task) async {
-    // Schedule notification for upcoming task
-    await _notifications.zonedSchedule(
-      task.id.hashCode, // Unique ID for the notification
-      'Task Due Soon: ${task.title}',
-      task.description,
-      tz.TZDateTime.from(
-        task.dueDate.subtract(Duration(hours: 1)), // Notify 1 hour before
-        tz.local,
-      ),
-      notification.NotificationDetails(
-        android: notification.AndroidNotificationDetails(
-          'task_reminders',
-          'Task Reminders',
-          channelDescription: 'Notifications for task reminders',
-          importance: notification.Importance.high,
-          priority: notification.Priority.high,
-        ),
-        iOS: notification.DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
+    // Ensure the notification time is in the future
+    tz.TZDateTime scheduledDate = tz.TZDateTime.from(task.dueDate, tz.local);
+    if (scheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
+      print('Cannot schedule notification for past date');
+      return;
+    }
 
-      uiLocalNotificationDateInterpretation:
-          notification.UILocalNotificationDateInterpretation.absoluteTime,
-      payload: task.id,
-      androidScheduleMode:
-          notification.AndroidScheduleMode.exact, // Pass task ID as payload
-    );
+    // Schedule notification for upcoming task
+    try {
+      await _notifications.zonedSchedule(
+        task.id.hashCode, // Unique ID for the notification
+        'Task Due Soon: ${task.title}',
+        task.description,
+        scheduledDate,
+        notification.NotificationDetails(
+          android: notification.AndroidNotificationDetails(
+            'task_reminders',
+            'Task Reminders',
+            channelDescription: 'Notifications for task reminders',
+            importance: notification.Importance.high,
+            priority: notification.Priority.high,
+          ),
+          iOS: notification.DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        uiLocalNotificationDateInterpretation:
+            notification.UILocalNotificationDateInterpretation.absoluteTime,
+        payload: task.id.toString(), // Convert ID to string
+        androidScheduleMode: notification
+            .AndroidScheduleMode.exactAllowWhileIdle, // Pass task ID as payload
+      );
+    } catch (e) {
+      print('Error scheduling notification: $e');
+    }
   }
 
   Future<void> cancelTaskNotification(TaskModel task) async {
-    await _notifications.cancel(task.id.hashCode);
+    try {
+      await _notifications.cancel(task.id.hashCode);
+    } catch (e) {
+      print('Error canceling notification: $e');
+    }
   }
 }
