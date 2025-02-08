@@ -43,7 +43,7 @@ A feature-rich cross-platform mobile application built with Flutter that helps u
 ### Installation
 
 1. Clone the repository
-    git clone https://github.com/yourusername/personal-task-manager.git
+    git clone https://github.com/punkushal/personal-task-manager
 
 2. Install dependencies
     flutter pub get
