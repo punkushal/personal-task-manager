@@ -36,7 +36,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       _description = widget.existingTask!.description!;
       _dueDate = widget.existingTask!.dueDate;
       _priority = widget.existingTask!.priority;
-      _categoryId = widget.existingTask!.categoryId!;
+      _categoryId = widget.existingTask!.category!;
     }
   }
 
@@ -99,7 +99,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         dueDate: scheduledDateTime,
         priority: _priority,
         userId: widget.userId,
-        categoryId: _categoryId,
+        category: _categoryId,
       );
       try {
         if (widget.existingTask == null) {
