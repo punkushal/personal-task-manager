@@ -1,17 +1,58 @@
-# personal_task_manager
+# Personal Task Manager
 
-A new Flutter project.
+A feature-rich cross-platform mobile application built with Flutter that helps users manage their daily tasks effectively. The app provides task organization, reminders, and synchronization across devices using Firebase.
+
+## Features
+
+- **User Authentication**
+  - Secure login and registration powered by Firebase Authentication
+  - Email and password authentication
+
+- **Task Management**
+  - Create, edit, and delete tasks
+  - Set task priorities (Low, Medium, High)
+  - Add detailed descriptions and due dates
+  - Mark tasks as complete
+
+- **Organization**
+  - Categorize tasks (Work, Personal, Shopping, etc.)
+  - Search functionality
+  - Filter tasks by category, due date, or priority
+
+- **Smart Features**
+  - Local notifications for task reminders
+  - Offline support with local caching
+  - Dark/Light mode toggle
+
+## Technologies Used
+
+- Flutter
+- Firebase Authentication
+- Firebase Firestore
+- shared_preferences for local storage
+- flutter_local_notifications
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter (latest version)
+- Firebase account
+- Android Studio / VS Code
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# personal-task-manager
+1. Clone the repository
+    git clone https://github.com/yourusername/personal-task-manager.git
+
+2. Install dependencies
+    flutter pub get
+
+3. Configure Firebase
+   - Create a new Firebase project
+   - Add your `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) files
+   - Enable Authentication and Firestore in Firebase Console
+
+4. Run the app
+    flutter run
+
