@@ -18,11 +18,9 @@ class TaskService {
         description: task.description,
         dueDate: task.dueDate,
         priority: task.priority,
-        status: task.status,
-        categoryId: task.categoryId,
+        category: task.category,
         userId: task.userId,
       );
-
       _notificationService.scheduleTaskNotification(updatedTask);
     } catch (e) {
       print('Error adding task: $e');
