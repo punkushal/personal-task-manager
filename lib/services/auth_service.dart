@@ -51,13 +51,6 @@ class AuthService {
       String email, String password, BuildContext context) async {
     try {
       await auth.signInWithEmailAndPassword(email: email, password: password);
-      // if (context.mounted) {
-      //   Navigator.pushReplacement(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (ctx) => HomeScreen(),
-      //       ));
-      // }
     } on FirebaseAuthException catch (e) {
       String msg = e.code;
       if (e.code == 'invalid-email') {

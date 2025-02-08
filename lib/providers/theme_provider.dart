@@ -23,6 +23,4 @@ class ThemeProvider with ChangeNotifier {
     await prefs.setBool(_themePreferenceKey, _isDarkMode);
     notifyListeners();
   }
-
-  ThemeMode get themeMode => _isDarkMode ? ThemeMode.dark : ThemeMode.light;
 }
