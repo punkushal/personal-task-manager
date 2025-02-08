@@ -2,16 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Priority { low, medium, high }
 
-enum TaskStatus { pending, inProgress, completed }
-
 class TaskModel {
   final String? id;
   final String title;
   final String? description;
   final DateTime dueDate;
   final Priority priority;
-  final TaskStatus status;
-  final String? categoryId;
+  final String? category;
   final String userId;
 
   TaskModel({
@@ -20,8 +17,7 @@ class TaskModel {
     this.description,
     required this.dueDate,
     this.priority = Priority.low,
-    this.status = TaskStatus.pending,
-    this.categoryId,
+    this.category,
     required this.userId,
   });
 
@@ -33,8 +29,7 @@ class TaskModel {
       description: data['description'],
       dueDate: (data['dueDate'] as Timestamp).toDate(),
       priority: Priority.values[data['priority']],
-      status: TaskStatus.values[data['status']],
-      categoryId: data['categoryId'],
+      category: data['categoryId'],
       userId: data['userId'],
     );
   }
@@ -45,8 +40,7 @@ class TaskModel {
       'description': description,
       'dueDate': Timestamp.fromDate(dueDate),
       'priority': priority.index,
-      'status': status.index,
-      'categoryId': categoryId,
+      'categoryId': category,
       'userId': userId,
     };
   }
