@@ -1,19 +1,1 @@
-name: Supabase Keep Alive
 
-on:
-  # Run once every day (enough to prevent free-tier pause)
-  schedule:
-    - cron: "0 0 * * *"
-  workflow_dispatch:
-
-jobs:
-  keep-alive:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Ping Supabase Keep-Alive Function
-        run: |
-          curl -s -o /dev/null -w "%{http_code}\n" \
-          -X GET \
-          https://cyimacxbdjaagqywoujn.supabase.co/functions/v1/keep-alive \
-          -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
